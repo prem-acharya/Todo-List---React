@@ -1,3 +1,4 @@
+// Homepage.js
 import React, { useEffect, useState } from "react";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../firebase.js";
@@ -9,9 +10,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LogoutIcon from "@mui/icons-material/Logout";
 import CheckIcon from "@mui/icons-material/Check";
-import DescriptionIcon from "@mui/icons-material/Description";
-import LinkIcon from "@mui/icons-material/Link";
-import ImageIcon from "@mui/icons-material/Image";
 
 export default function Homepage() {
   const [todo, setTodo] = useState("");
@@ -22,7 +20,8 @@ export default function Homepage() {
   const [userEmail, setUserEmail] = useState("");
   const [description, setDescription] = useState("");
   const [link, setLink] = useState("");
-  const [image, setImage] = useState("");
+  const [images, setImages] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null); // Added state for selected image
   const [inputError, setInputError] = useState("");
   const navigate = useNavigate();
 
@@ -78,13 +77,13 @@ export default function Homepage() {
         completed: false,
         description: description,
         link: link,
-        image: image,
+        images: images,
       });
 
       setTodo("");
       setDescription("");
       setLink("");
-      setImage("");
+      setImages([]);
     }
   };
 
@@ -93,7 +92,7 @@ export default function Homepage() {
     setTodo(todo.todo);
     setDescription(todo.description || "");
     setLink(todo.link || "");
-    setImage(todo.image || "");
+    setImages(todo.images || []);
     setTempUidd(todo.uidd);
   };
 
@@ -103,14 +102,14 @@ export default function Homepage() {
         todo: todo,
         description: description,
         link: link,
-        image: image,
+        images: images,
         tempUidd: tempUidd,
       });
 
       setTodo("");
       setDescription("");
       setLink("");
-      setImage("");
+      setImages([]);
       setIsEdit(false);
     }
   };
@@ -131,6 +130,28 @@ export default function Homepage() {
     }
   };
 
+  const handleImageUpload = async (files) => {
+    const newImages = [...images];
+    for (const file of files) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        newImages.push(e.target.result);
+        setImages([...newImages]);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageDrop = (e) => {
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+    handleImageUpload(files);
+  };
+
+  const handleImageClick = (image) => {
+    setSelectedImage(image);
+  };
+
   useEffect(() => {
     document.title = `Todo List - ${username || userEmail}`;
   }, [username, userEmail]);
@@ -142,7 +163,9 @@ export default function Homepage() {
       </h1>
       <div className="w-full max-w-md mb-4 relative">
         <input
-          className={`add-edit-input p-2 pr-8 border rounded border-gray-300 w-full ${inputError ? 'border-red-500' : ''}`}
+          className={`add-edit-input p-2 pr-8 border rounded border-gray-300 w-full ${
+            inputError ? "border-red-500" : ""
+          }`}
           type="text"
           placeholder="Add todo..."
           value={todo}
@@ -163,14 +186,52 @@ export default function Homepage() {
         )}
       </div>
 
-      <div className="w-full max-w-md p-2 bg-white overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200 rounded-md mt-4 max-h-80">
+      <div
+        onClick={() => document.getElementById("imageInput").click()}
+        onDrop={(e) => handleImageDrop(e)}
+        onDragOver={(e) => e.preventDefault()}
+        className="drop-area border-dashed border-2 border-gray-300 p-2 w-full max-w-md rounded text-center cursor-pointer flex items-center justify-center transition duration-300 hover:bg-gray-100 hover:border-gray-500"
+      >
+        {images.length > 0 ? (
+          <div className="flex flex-wrap">
+            {images.map((image, index) => (
+              <img
+                key={index}
+                src={image}
+                alt={`Selected ${index + 1}`}
+                className="w-20 h-20 object-cover rounded m-2 cursor-pointer"
+                onClick={() => handleImageClick(image)}
+              />
+            ))}
+          </div>
+        ) : (
+          "Upload Image"
+        )}
+      </div>
+
+      <input
+        id="imageInput"
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => handleImageUpload(e.target.files)}
+        onClick={(e) => (e.target.value = null)}
+        multiple
+      />
+
+      <div className="w-full max-w-md p-2 bg-white overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400  scrollbar-track-gray-200 rounded-md mt-4 max-h-80">
         {todos.map((todo) => (
           <div
             key={todo.uidd}
-            className={`todo flex items-center justify-between bg-white p-2 mb-2 rounded border border-gray-300 ${todo.completed ? 'completed' : ''}`}
+            className={`todo flex items-center justify-between bg-white p-2 mb-2 rounded border border-gray-300 ${
+              todo.completed ? "completed" : ""
+            }`}
           >
             <div className="flex items-center">
-              <div className="cursor-pointer mr-2" onClick={() => handleCompleteToggle(todo.uidd, todo.completed)}>
+              <div
+                className="cursor-pointer mr-2"
+                onClick={() => handleCompleteToggle(todo.uidd, todo.completed)}
+              >
                 {todo.completed ? "👍" : "👎"}
               </div>
               <div>
@@ -182,18 +243,22 @@ export default function Homepage() {
             </div>
             <div className="flex space-x-2">
               {todo.link && (
-                <LinkIcon
-                  fontSize="large"
-                  onClick={() => window.open(todo.link, "_blank")}
-                  className="cursor-pointer text-blue-500"
-                />
+                <a href={todo.link} target="_blank" rel="noopener noreferrer">
+                  Open Link
+                </a>
               )}
-              {todo.image && (
-                <ImageIcon
-                  fontSize="large"
-                  onClick={() => alert(`Image: ${todo.image}`)}
-                  className="cursor-pointer text-blue-500"
-                />
+              {todo.images && (
+                <div className="flex flex-wrap">
+                  {todo.images.map((image, index) => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt={`Selected ${index + 1}`}
+                      className="w-10 h-10 object-cover rounded m-1 cursor-pointer"
+                      onClick={() => handleImageClick(image)}
+                    />
+                  ))}
+                </div>
               )}
               <EditIcon
                 fontSize="large"
@@ -219,6 +284,19 @@ export default function Homepage() {
           Logout
         </button>
       </div>
+
+      {selectedImage && (
+        <div
+          className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center"
+          onClick={() => setSelectedImage(null)}
+        >
+          <img
+            src={selectedImage}
+            alt="Selected"
+            className="max-h-full custom-max-w-50"
+          />
+        </div>
+      )}
     </div>
   );
 }

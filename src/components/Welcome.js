@@ -96,7 +96,6 @@ export default function Welcome() {
                   value={registerInformation.username}
                   onChange={(e) =>
                     setRegisterInformation({
-                      ...registerInformation,
                       username: e.target.value,
                     })
                   }
@@ -134,6 +133,7 @@ export default function Welcome() {
                   onChange={(e) =>
                     setRegisterInformation({
                       ...registerInformation,
+                      confirmPassword: e.target.value,
                     })
                   }
                 />

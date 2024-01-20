@@ -11,3 +11,7 @@
     @apply bg-gray-500 text-white hover:bg-gray-600;
   }
     
+
+.custom-max-w-50 {
+    max-width: 50%;
+  }
