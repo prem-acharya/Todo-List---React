@@ -1,4 +1,3 @@
-// Homepage.js
 import React, { useEffect, useState } from "react";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../firebase.js";
@@ -21,11 +20,12 @@ export default function Homepage() {
   const [description, setDescription] = useState("");
   const [link, setLink] = useState("");
   const [images, setImages] = useState([]);
-  const [selectedImage, setSelectedImage] = useState(null); // Added state for selected image
+  const [selectedImage, setSelectedImage] = useState(null);
   const [inputError, setInputError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUsername(user.displayName || "User");
@@ -34,12 +34,14 @@ export default function Homepage() {
           setTodos([]);
           const data = snapshot.val();
           if (data !== null) {
-            Object.values(data).map((todo) => {
-              setTodos((oldArray) => [...oldArray, todo]);
+            Object.values(data).forEach((todo) => {
+                setTodos((oldArray) => [...oldArray, todo]);
             });
           }
         });
-      } else if (!user) {
+      } else {
+        setUsername("");
+        setUserEmail("");
         navigate("/");
       }
     });
@@ -49,9 +51,15 @@ export default function Homepage() {
     };
   }, [navigate]);
 
+  useEffect(() => {
+    document.title = `Todo List - ${username || userEmail}`;
+  }, [username, userEmail]);
+
   const handleSignOut = () => {
     signOut(auth)
       .then(() => {
+        setUsername("");
+        setUserEmail("");
         navigate("/");
       })
       .catch((err) => {
@@ -132,14 +140,26 @@ export default function Homepage() {
 
   const handleImageUpload = async (files) => {
     const newImages = [...images];
-    for (const file of files) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        newImages.push(e.target.result);
-        setImages([...newImages]);
-      };
-      reader.readAsDataURL(file);
-    }
+
+    const readFile = (file) => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          resolve(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      });
+    };
+
+    const uploadImages = async () => {
+      for (const file of files) {
+        const image = await readFile(file);
+        newImages.push(image);
+      }
+      setImages([...newImages]);
+    };
+
+    uploadImages();
   };
 
   const handleImageDrop = (e) => {
@@ -151,10 +171,6 @@ export default function Homepage() {
   const handleImageClick = (image) => {
     setSelectedImage(image);
   };
-
-  useEffect(() => {
-    document.title = `Todo List - ${username || userEmail}`;
-  }, [username, userEmail]);
 
   return (
     <div className="homepage bg-gray-100 min-h-screen flex flex-col items-center justify-center">
@@ -287,7 +303,7 @@ export default function Homepage() {
 
       {selectedImage && (
         <div
-          className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center"
+          className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center"
           onClick={() => setSelectedImage(null)}
         >
           <img

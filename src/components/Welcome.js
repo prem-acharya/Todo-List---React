@@ -1,4 +1,3 @@
-// Welcome.js
 import React, { useState, useEffect } from "react";
 import {
   signInWithEmailAndPassword,
@@ -49,14 +48,15 @@ export default function Welcome() {
   };
 
   const handleEnter = (e) => {
-    setPassword(e.target.value);
-  
-    // Check if the pressed key is "Enter"
     if (e.key === "Enter") {
-      handleSignIn();
+      if (isRegistering) {
+        handleRegister();
+      } else {
+        handleSignIn();
+      }
     }
   };
-  
+    
   const handleRegister = () => {
     if (registerInformation.password !== registerInformation.confirmPassword) {
       alert("Please confirm that passwords are the same");
@@ -78,6 +78,7 @@ export default function Welcome() {
       .catch((err) => alert(err.message));
   };
   
+    document.title = `Todo List`;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
