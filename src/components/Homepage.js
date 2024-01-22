@@ -1,7 +1,8 @@
+// Homepage.js
 import React, { useEffect, useState } from "react";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../firebase.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";  // Import Link for navigation
 import { uid } from "uid";
 import { set, ref, onValue, remove, update } from "firebase/database";
 import AddIcon from "@mui/icons-material/Add";
@@ -25,7 +26,6 @@ export default function Homepage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUsername(user.displayName || "User");
@@ -35,7 +35,7 @@ export default function Homepage() {
           const data = snapshot.val();
           if (data !== null) {
             Object.values(data).forEach((todo) => {
-                setTodos((oldArray) => [...oldArray, todo]);
+              setTodos((oldArray) => [...oldArray, todo]);
             });
           }
         });
@@ -171,6 +171,8 @@ export default function Homepage() {
   const handleImageClick = (image) => {
     setSelectedImage(image);
   };
+
+  const isAdmin = auth.currentUser?.email === "admin@admin.com"; // Define isAdmin here
 
   return (
     <div className="homepage bg-gray-100 min-h-screen flex flex-col items-center justify-center">
@@ -311,6 +313,13 @@ export default function Homepage() {
             alt="Selected"
             className="max-h-full custom-max-w-50"
           />
+        </div>
+      )}
+      {isAdmin && (
+        <div className="p-2 mt-4 bg-green-500 rounded border border-gray-300">
+          <Link to="/admin" className="admin-link cursor-pointer text-white">
+            Admin Page
+          </Link>
         </div>
       )}
     </div>
