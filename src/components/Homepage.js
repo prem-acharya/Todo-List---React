@@ -1,8 +1,7 @@
-// Homepage.js
 import React, { useEffect, useState } from "react";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../firebase.js";
-import { useNavigate, Link } from "react-router-dom";  // Import Link for navigation
+import { useNavigate } from "react-router-dom";  // Import Link for navigation
 import { uid } from "uid";
 import { set, ref, onValue, remove, update } from "firebase/database";
 import AddIcon from "@mui/icons-material/Add";
@@ -172,14 +171,12 @@ export default function Homepage() {
     setSelectedImage(image);
   };
 
-  const isAdmin = auth.currentUser?.email === "admin@admin.com"; // Define isAdmin here
-
   return (
     <div className="homepage bg-gray-100 min-h-screen flex flex-col items-center justify-center">
       <h1 className="text-4xl font-bold mb-6 text-center text-blue-500">
         Welcome to Todo List, {username || userEmail}
       </h1>
-      <div className="w-full max-w-md mb-4 relative">
+      <div className="w-full bg-white shadow-xl rounded max-w-md mb-4 relative">
         <input
           className={`add-edit-input p-2 pr-8 border rounded border-gray-300 w-full ${
             inputError ? "border-red-500" : ""
@@ -237,11 +234,11 @@ export default function Homepage() {
         multiple
       />
 
-      <div className="w-full max-w-md p-2 bg-white overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400  scrollbar-track-gray-200 rounded-md mt-4 max-h-80">
+      <div className="w-full max-w-md p-2 shadow-xl bg-white overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400  scrollbar-track-gray-200 rounded-md mt-4 max-h-80">
         {todos.map((todo) => (
           <div
             key={todo.uidd}
-            className={`todo flex items-center justify-between bg-white p-2 mb-2 rounded border border-gray-300 ${
+            className={`todo flex items-center justify-between bg-white p-2 mb-2 shadow-xl transition-transform transform hover:scale-95 rounded border border-gray-300 ${
               todo.completed ? "completed" : ""
             }`}
           >
@@ -313,13 +310,6 @@ export default function Homepage() {
             alt="Selected"
             className="max-h-full custom-max-w-50"
           />
-        </div>
-      )}
-      {isAdmin && (
-        <div className="p-2 mt-4 bg-green-500 rounded border border-gray-300">
-          <Link to="/admin" className="admin-link cursor-pointer text-white">
-            Admin Page
-          </Link>
         </div>
       )}
     </div>

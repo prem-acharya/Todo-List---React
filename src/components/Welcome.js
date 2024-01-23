@@ -40,9 +40,16 @@ export default function Welcome() {
   };
 
   const handleSignIn = () => {
+    console.log("Email:", email);
+    console.log("Password:", password);
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
-        navigate("/homepage");
+        const currentUser = auth.currentUser;
+        if (currentUser && currentUser.email === "admin@admin.com" && password === "admin123") {
+          navigate("/admin");
+        } else {
+          navigate("/homepage");
+        }
       })
       .catch((err) => alert(err.message));
   };
