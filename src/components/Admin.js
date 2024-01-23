@@ -28,8 +28,6 @@ export default function Admin() {
       return data;
     };
 
-    fetchData();
-
     const fetchUsernames = async () => {
       const usernamesData = await onValue(ref(db, "usernames"), (snapshot) => {
         if (snapshot.exists()) {
@@ -39,7 +37,11 @@ export default function Admin() {
       return usernamesData;
     };
 
-    fetchUsernames();
+    const fetchDataAndUsernames = async () => {
+      await Promise.all([fetchData(), fetchUsernames()]);
+    };
+
+    fetchDataAndUsernames();
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log("User:", user);
