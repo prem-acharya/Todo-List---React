@@ -28,10 +28,10 @@ export default function Admin() {
       return data;
     };
 
-    fetchData();
+    // fetchData();
 
     const fetchUsernames = async () => {
-      const usernamesData = await onValue(ref(db, "usernames"), (snapshot) => {
+      const usernamesData = await onValue(ref(db, "userData"), (snapshot) => {
         if (snapshot.exists()) {
           setUsernames(snapshot.val());
         }
@@ -39,7 +39,13 @@ export default function Admin() {
       return usernamesData;
     };
 
-    fetchUsernames();
+    // fetchUsernames();
+
+    const fetchDataAndUsernames = async () => {
+      await Promise.all([fetchData(), fetchUsernames()]);
+    };
+
+    fetchDataAndUsernames();
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log("User:", user);
@@ -100,10 +106,10 @@ export default function Admin() {
           </button>
         </div>
         {Object.keys(userData).map((userId, userIndex) => (
-          <div key={userId} className="todo bg-white cursor-pointer p-6 my-4 rounded-md shadow-xl transition-transform transform hover:scale-95">
-            <div className="flex items-center justify-between">
+          <div key={userId} className="todo bg-white cursor-pointer p-6 my-4 rounded-md shadow-xl transition-transform transform hover:scale-105">
+            <div className="flex items-center justify-between" onClick={() => toggleUserTodos(userId)}>
               <h2 className="text-2xl font-bold mb-2" onClick={() => toggleUserTodos(userId)}>
-                {`${userIndex + 1}. ${usernames[userId] || "Unknown User"}'s Todos`}
+                {`${userIndex + 1}. ${userData[userId].displayname || "Unknown User"}'s Todos`}
               </h2>
               <button
                 onClick={() => toggleUserTodos(userId)}
