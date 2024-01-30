@@ -109,7 +109,8 @@ export default function Admin() {
           <div key={userId} className="todo bg-white cursor-pointer p-6 my-4 rounded-md shadow-xl transition-transform transform hover:scale-105">
             <div className="flex items-center justify-between" onClick={() => toggleUserTodos(userId)}>
               <h2 className="text-2xl font-bold mb-2" onClick={() => toggleUserTodos(userId)}>
-                {`${userIndex + 1}. ${userData[userId].displayname || "Unknown User"}'s Todos`}
+                {/* {`${userIndex + 1}. ${userData[userId].displayname || "Unknown User"}'s Todos`} */}
+                {userIndex + 1}. {(userData[userId].displayname || "User-") + (userIndex + 1)} Todo's
               </h2>
               <button
                 onClick={() => toggleUserTodos(userId)}
