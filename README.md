@@ -4,7 +4,7 @@ This is a simple Todo List application built using React and Firebase. Users can
 
 ## Live Demo
 
-Check out the live demo [here](https://todo-app-bf450.web.app/).
+Check out the live demo <a href="<https://todo-app-bf450.web.app/>" target="_blank">here</a>.
 
 ## Features
 
