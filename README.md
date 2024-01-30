@@ -19,10 +19,12 @@ Check out the live demo [here](https://todo-app-bf450.web.app/).
 - Firebase Authentication
 - Firebase Realtime Database
 
-## Getting Started
+## Install dependencies:
 
-1. Clone the repository:
+- npm install
+- Create a Firebase project and configure your Firebase credentials in the firebase.js file.
 
-```bash
-git clone <repository-url>
-cd <repository-folder>
+## Run the application:
+
+- npm start
+- Open your browser and go to http://localhost:3000.
