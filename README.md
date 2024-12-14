@@ -6,6 +6,9 @@ This is a simple Todo List application built using React and Firebase. Users can
 
 Check out the live demo [here](<https://todo-app-bf450.web.app/>).
 
+![image](https://github.com/user-attachments/assets/62b45641-ff2f-4835-8e7c-b42fc15bd5b2)
+
+
 ## Features
 
 - User authentication (register, log in, log out)
